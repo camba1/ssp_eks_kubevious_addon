@@ -49,8 +49,6 @@ Install ssp-eks-module
 npm i @aws-quickstart/ssp-amazon-eks
 ```
 
-
-
 ##### Basic project setup
 
 When CDK initialized our project it created a couple of files with a generic cdk project structure. We will be replacing the content of those files with code specific to developing an add-on.
@@ -118,9 +116,9 @@ export class MyKubeviousAddOn extends ssp.addons.HelmAddOn {
 This is the basic structure for a Helm based add-on. It contains:
 
 - `MyKubeviousAddOn class` : Main logic structure for the add-on
-    - The `deploy` method calls this.addHelchart which is in charge of fetching the chart from the appropriate Helm repo and applying and necessary Helm overrides values
-- `MyKubeviousAddOnProps`: User provided values for the Helm chart values
-- `defaultProps:` Combination of the mandatory values for a Helm chart add-on and the user provided Helm chart values to be used to set up the chart
+    - The `deploy` method calls this.addHelchart which is in charge of fetching the chart from the appropriate Helm repo and applying user provided Helm overrides values
+- `MyKubeviousAddOnProps`: User provided values for the Helm chart
+- `defaultProps:` Combination of the mandatory values and the user provided Helm chart values to be applied to the chart
 
 
 
