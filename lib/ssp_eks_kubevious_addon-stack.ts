@@ -6,15 +6,10 @@ import * as ssp from '@aws-quickstart/ssp-amazon-eks';
  * User provided options for the Helm Chart
  */
 export interface sspKubeviousAddOnProps extends ssp.addons.HelmAddOnUserProps {
-  /**
-   * Cloudwatch region where logs are forwarded
-   */
-  cloudWatchRegion?: string,
   version?: string,
-  ingress_enabled?: boolean,
-  kubevious_service_type?: string,
-  mysql_root_password?: string,
-
+  ingressEnabled?: boolean,
+  kubeviousServiceType?: string,
+  mysqlRootPassword?: string,
 }
 
 /**
@@ -27,18 +22,17 @@ export const defaultProps: ssp.addons.HelmAddOnProps & sspKubeviousAddOnProps = 
   version: "0.8.15",
   release: "kubevious",
   repository:  "https://helm.kubevious.io",
-  cloudWatchRegion: "us-east-2",
   values: {},
 
-  ingress_enabled: false,
-  kubevious_service_type: "ClusterIP",
-  mysql_root_password: "kubevious"
+  ingressEnabled: false,
+  kubeviousServiceType: "ClusterIP",
+  mysqlRootPassword: "kubevious"
 }
 
 /**
  * Main class to instantiate the Helm chart
  */
-export class sspKubeviousAddOn extends ssp.addons.HelmAddOn {
+export class SspKubeviousAddOn extends ssp.addons.HelmAddOn {
 
   readonly options: sspKubeviousAddOnProps
 
@@ -49,11 +43,10 @@ export class sspKubeviousAddOn extends ssp.addons.HelmAddOn {
 
 
   deploy(clusterInfo: ssp.ClusterInfo): Promise<Construct> {
-    let values: ssp.Values = populateValues(this.options);
-    const chart = this.addHelmChart(clusterInfo, values);
-    return Promise.resolve(chart);
+    let values: ssp.Values = populateValues(this.options)
+    const chart = this.addHelmChart(clusterInfo, values)
+    return Promise.resolve(chart)
   }
-
 }
 
 /**
@@ -61,19 +54,11 @@ export class sspKubeviousAddOn extends ssp.addons.HelmAddOn {
  * @param helmOptions User provided values to customize the chart
  */
 function populateValues(helmOptions: sspKubeviousAddOnProps): ssp.Values {
-  return {
-    ingress: {
-      enabled:  helmOptions.ingress_enabled
-    },
-    kubevious: {
-      service: {
-        type: helmOptions.kubevious_service_type
-      }
-    },
-    mysql: {
-      root: {
-        password: helmOptions.mysql_root_password
-      }
-    }
-  }
+  const values = helmOptions.values ?? {};
+
+  ssp.utils.setPath(values, "ingress.enabled",  helmOptions.ingressEnabled)
+  ssp.utils.setPath(values, "kubevious.service.type",  helmOptions.kubeviousServiceType)
+  ssp.utils.setPath(values, "mysql.root.password",  helmOptions.mysqlRootPassword)
+
+  return values
 }
